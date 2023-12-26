@@ -23,6 +23,27 @@ pub fn fetch_all_sessions() -> Result<String, TsmErrors> {
     }
 }
 
+/// Switch to the existing session.
+///
+/// # Params
+/// * session\_name(String) - session name to switch to
+pub fn switch_session(session_name: String) -> Result<(), TsmErrors> {
+    let switch_session_command = format!("tmux switch-client -t {}", session_name);
+    execute_tmux_command(switch_session_command.as_str())?;
+    Ok(())
+}
+
+/// Create new session and switch to it.
+///
+/// # Params
+/// * session\_name(String) - session to create
+pub fn create_session(session_name: String) -> Result<(), TsmErrors> {
+    let create_session_command = format!("tmux new-session -ds {}", session_name);
+    execute_tmux_command(create_session_command.as_str())?;
+    switch_session(session_name)?;
+    Ok(())
+}
+
 /// Takes tmux command as an input and returns the command's output.
 ///
 /// # Params
