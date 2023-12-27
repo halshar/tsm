@@ -1,10 +1,13 @@
 use skim::prelude::{SkimItemReader, SkimOptionsBuilder};
 use skim::Skim;
+use std::error::Error;
+use std::fmt;
 use std::io::Cursor;
 
 use crate::tmux::{create_session, fetch_all_sessions, switch_session};
 
 /// Custom errors for command execution.
+#[derive(Debug)]
 pub enum TsmErrors {
     /// The parsing of stdout into string failed.
     NonUtf8Path,
@@ -15,6 +18,21 @@ pub enum TsmErrors {
     /// The operation was cancelled.
     OperationCancelled,
 }
+
+impl fmt::Display for TsmErrors {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TsmErrors::NonUtf8Path => write!(f, "Error: Command is not valid UTF-8 string"),
+            TsmErrors::FuzzyFindError(e) => write!(f, "Error: Fuzzy finder failed: {}", e),
+            TsmErrors::CommandExecutionFailed(e) => {
+                write!(f, "Error: Command execution failed: {}", e)
+            }
+            TsmErrors::OperationCancelled => write!(f, "Operation cancelled"),
+        }
+    }
+}
+
+impl Error for TsmErrors {}
 
 /// Takes the session names as input and returns either the matched session
 /// name or the input query.

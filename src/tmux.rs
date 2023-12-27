@@ -38,7 +38,7 @@ pub fn switch_session(session_name: String) -> Result<(), TsmErrors> {
 /// # Params
 /// * session\_name(String) - session to create
 pub fn create_session(session_name: String) -> Result<(), TsmErrors> {
-    let create_session_command = format!("tmux new-session -ds {}", session_name);
+    let create_session_command = format!("tmux new-session -ds {} -c ~", session_name);
     execute_tmux_command(create_session_command.as_str())?;
     switch_session(session_name)?;
     Ok(())
@@ -56,6 +56,7 @@ pub fn execute_tmux_command(command: &str) -> Result<Output, TsmErrors> {
         // split on space and include only the arguments
         .args(command.split(' ').skip(1))
         .stdin(Stdio::inherit())
+        .stderr(Stdio::inherit())
         .output()
         .map_err(|e| TsmErrors::CommandExecutionFailed(e.to_string()))
 }
