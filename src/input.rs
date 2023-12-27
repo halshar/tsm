@@ -49,7 +49,7 @@ fn get_session_name(input: String) -> Result<String, TsmErrors> {
         .multi(false)
         .color(Some("dark"))
         .build()
-        .unwrap();
+        .map_err(|_| TsmErrors::FuzzyFindError("Error: Cannot display fuzzy finder".to_string()))?;
 
     let item_reader = SkimItemReader::default();
     let items = item_reader.of_bufread(Cursor::new(input));
